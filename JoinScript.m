@@ -82,10 +82,12 @@ Ts = 1e-1; % Samplig Time 0.1 sec
 Tf = 10; % Duration trajectory (s)
 tt = [0:Ts:10]; %% time vector
 
-[pos,vel,acc] = jtraj(q0,qf,tt);%%% trajectory both in joint space and operational space
+[pos,vel,acc] = jtraj(q0,qf,tt);%%% trajectory both in the joint space
+
+% ctraj function: Cartesian trajectory between two poses
+traj = ctraj(q0,qf,tt); %% Trajectory in the task space
 
 %%% Plot trajectory. Just visualization, no control
-
 MyRobot.plot(pos);
 
 % Note that the trajectory needs to be polynomial 
