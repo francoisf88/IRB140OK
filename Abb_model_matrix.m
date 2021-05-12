@@ -1,6 +1,6 @@
 
 function y = Abb_model_matrix(u)
-
+%For the simulink scheme
 
 q = u(1:6)'; %mapping position
 dq = u(7:12)'; %mapping velocity
