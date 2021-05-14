@@ -1,7 +1,7 @@
 clc,close all,clear all
 
 %%% DH PARAMETERS %%%
-d1 = 352*1e-3; a2 = 360*1e-3; a1 = 70*1e-3; d4 = 380*1e-3; d6 = 65*1e-3;
+d1 = 352*1e-3; a2 = 360*1e-3; a1 = 70*1e-3; d4 = 380*1e-3; 
 
 %%% DynamicParameters %%% SI PB --> REGARDER LES r
 m1 = 16.287; % mass[kg] 
@@ -28,5 +28,5 @@ m6 = 0.025;%kg
 I6 = diag([13110.02103 19629.94965 6526.02823])/(1000*1000);%Inertia [kg/m2]
 r6 = [502.06 0 711.77]*1e-3; %pos COG
 
-save('data_robot_DH','d1','a2','a1','d4','d6');
+save('data_robot_DH','d1','a2','a1','d4');
 save('data_robot_Dy','m1','I1','r1','m2','I2','r2','m3','I3','r3','m4','I4','r4','m5','I5','r5','m6','I6','r6');
