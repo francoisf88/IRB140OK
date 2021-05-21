@@ -141,11 +141,9 @@ A1 = SS(1)
 
 Position = transl(A1)
 
-Qpos= inv_kin2(Position)
-Qposdouble =zeros(1,6)
-for i=[1:6]
-    Qposdouble(1,i) = double(Qpos(i))
-end
+Qpos= inv_kin(Position)
+f
+Qposdouble = double(Qpos(1))
 J = MyRobot.jacob0(Qpos)
 
 
