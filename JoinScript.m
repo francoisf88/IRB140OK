@@ -122,30 +122,49 @@ MyRobot.plot(pos);
 
 %% A second trajectory in task space
 
-%Getting the cartesian coordinates of the end point
-T = MyRobot.fkine(qf);
+% %Getting the cartesian coordinates of the end point
+% T = MyRobot.fkine(qf);
+% 
+% x0 = T.t;
+% xf = [x0(1)-2 x0(2) x0(3)] %A straight line 
+% S0 = SE3(x0); %inital position
+% Sf = SE3(xf); %final position
+% 
+% Ts = 1e-1; % Samplig Time 0.1 sec
+% Tf = 1; % Duration trajectory (s)
+% tt = [0:Ts:Tf]; %% time vector
 
-x0 = T.t;
-xf = [x0(1)-2 x0(2) x0(3)] %A straight line 
-S0 = SE3(x0); %inital position
-Sf = SE3(xf); %final position
+% %Tried but didn't work
 
-Ts = 1e-1; % Samplig Time 0.1 sec
+% SS = ctraj(S0,Sf,tt);
+% %From now, we need inverse kinematics to have 
+% 
+% A1 = SS(1)
+% 
+% Position = transl(A1)
+% 
+% % %Qpos= inv_kin2(Position)
+% % Qpos= inv_kin(Position)
+% % Qposdouble =zeros(1,6);
+% % for i=[1:6]
+% %     Qposdouble(1,i) = double(Qpos(i))
+% % end
+% %J = MyRobot.jacob0(Qpos)
+
+%% A better way
+
+x0 = dir_kin(qf); %task space departure
+xf = x0 + [ 0.03 0 0 0 0 0];%task space arrival
+
+Ts = 1e-3; % Samplig Time 0.1 sec
 Tf = 1; % Duration trajectory (s)
 tt = [0:Ts:Tf]; %% time vector
 
-SS = ctraj(S0,Sf,tt);
-%From now, we need inverse kinematics to have 
+K =100*diag([1 1 1]);
+[x, xd, xdd] = jtraj(x0,xf,tt);
 
-A1 = SS(1)
 
-Position = transl(A1)
+data = out.q.data;
 
-Qpos= inv_kin2(Position)
-Qposdouble =zeros(1,6)
-for i=[1:6]
-    Qposdouble(1,i) = double(Qpos(i))
-end
-J = MyRobot.jacob0(Qpos)
-
+MyRobot.plot(data);
 
