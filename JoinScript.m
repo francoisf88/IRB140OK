@@ -161,7 +161,7 @@ Tf = 1; % Duration trajectory (s)
 tt = [0:Ts:Tf]; %% time vector
 
 K =10*diag([1 1 1 1 1 1]);
-[x, xd, xdd] = jtraj(x0,xf,tt);%in joint space
+[x, xd, xdd] = jtraj(x0,xf,tt);%in task space
 
 
 data = out.q.data;
@@ -170,7 +170,7 @@ MyRobot.plot(data);
 
 %% Force control
 
-Fdval = [0 0 800 0 0 0];%force and torque desired to cut the bone
+Fdval = [800 0 0 0 0 0];%force and torque desired to cut the bone
 n = size(tt');
 Fd = zeros(n(1),6);
 
@@ -187,8 +187,8 @@ C12 = C11 - 2*C66; %Off dig-stiffness GPa
 
 K = [C11 C12 C13 0 0 0; C12 C11 C13 0 0 0; C13 C13 C33 0 0 0; 0 0 0 C44 0 0; 0 0 0 0 C44 0; 0 0 0 0 0 C66]; % Stiffness of the femoral neck (need to be entered by surgeon)
 
-
-
+Md = 100*diag([1 1 1 1 1 1]);
+InvMd = inv(Md);
 
 xrval = x0; % We cut through the bone and get out
 xr = zeros(n(1),6);
@@ -197,7 +197,7 @@ for i=1:n(1)
    xr(i,:) = xrval ;
 end
 
-Kp = 100*diag([0.01 1 1 1 1 1]) ; %we want to be stiff, not compliant
+Kp = 100*diag([1 1 1 1 1 1]) ; %we want to be stiff, not compliant
 Kd = 25*diag([1 1 1 1 1 1]);
 
 
