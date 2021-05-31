@@ -154,17 +154,60 @@ MyRobot.plot(pos);
 %% A better way
 
 x0 = dir_kin(qf); %task space departure
-xf = x0 + [ 0.03 0 0 0 0 0];%task space arrival
+xf = x0 + [0.03 0 0 0 0 0];%task space arrival
 
 Ts = 1e-3; % Samplig Time 0.1 sec
 Tf = 1; % Duration trajectory (s)
 tt = [0:Ts:Tf]; %% time vector
 
-K =100*diag([1 1 1]);
-[x, xd, xdd] = jtraj(x0,xf,tt);
+K =10*diag([1 1 1 1 1 1]);
+[x, xd, xdd] = jtraj(x0,xf,tt);%in joint space
 
 
 data = out.q.data;
 
 MyRobot.plot(data);
+
+%% Force control
+
+Fdval = [0 0 800 0 0 0];%force and torque desired to cut the bone
+n = size(tt');
+Fd = zeros(n(1),6);
+
+for i=1:n(1)
+   Fd(i,:) = Fdval ;
+end
+
+C11 = 20.1 ;%longitudinal stiffness GPa
+C33 = 29.5 ;%longitudinal stiffness GPa
+C13 = 12; %Off dig-stiffness GPa
+C44 = 6; %GPa
+C66 = 4.5; %GPa
+C12 = C11 - 2*C66; %Off dig-stiffness GPa
+
+K = [C11 C12 C13 0 0 0; C12 C11 C13 0 0 0; C13 C13 C33 0 0 0; 0 0 0 C44 0 0; 0 0 0 0 C44 0; 0 0 0 0 0 C66]; % Stiffness of the femoral neck (need to be entered by surgeon)
+
+
+
+
+xrval = x0; % We cut through the bone and get out
+xr = zeros(n(1),6);
+
+for i=1:n(1)
+   xr(i,:) = xrval ;
+end
+
+Kp = 100*diag([0.01 1 1 1 1 1]) ; %we want to be stiff, not compliant
+Kd = 25*diag([1 1 1 1 1 1]);
+
+
+
+
+
+
+
+
+
+
+
 
