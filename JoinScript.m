@@ -43,10 +43,10 @@ T = MyRobot.fkine(q);
 %%% ----> to do
 %T_analytical = T_Analytical() %% with the simbolic toolbox you obtain the analytical version of the T 
 
-pos = T.t;
-x = pos(1);
-y = pos(2);
-z = pos(3);
+% pos = T.t;
+% x = pos(1);
+% y = pos(2);
+% z = pos(3);
 
 % To convert the homogenous transform to rotational matrix (gives me the orientation of the end effector) and translation (the position) 
 [R,t] = tr2rt(T);
@@ -115,9 +115,9 @@ qf = [pi/2 pi/3 pi/12 pi/2 0 pi/2]; %final position
 
 Ts = 1e-1; % Samplig Time 0.1 sec
 Tf = 10; % Duration trajectory (s)
-tt = [0:Ts:10]; %% time vector
+tt1 = [0:Ts:10]; %% time vector
 
-[pos,vel,acc] = jtraj(q0,qf,tt);%%% trajectory both in the joint space
+[pos,vel,acc] = jtraj(q0,qf,tt1);%%% trajectory both in the joint space
 MyRobot.plot(pos);
 
 %% A second trajectory in task space
@@ -156,27 +156,22 @@ MyRobot.plot(pos);
 x0 = dir_kin(qf); %task space departure
 xf = x0 + [0.03 0 0 0 0 0];%task space arrival
 
-Ts = 1e-3; % Samplig Time 0.1 sec
-Tf = 1; % Duration trajectory (s)
-tt = [0:Ts:Tf]; %% time vector
+Ts = 1e-1; % Samplig Time 0.1 sec
+Tf = 18; % Duration trajectory (s) (we start at the end of the first traj)
+tt2 = [10:Ts:Tf]; %% time vector
 
 K =10*diag([1 1 1 1 1 1]);
-[x, xd, xdd] = jtraj(x0,xf,tt);%in task space
+[posx, posxd, posxdd] = jtraj(x0,xf,tt2);%in task space
 
 
-data = out.q.data;
+%data = out.q.data;
 
-MyRobot.plot(data);
+% MyRobot.plot(data);
 
 %% Force control
 
-Fdval = [800 0 0 0 0 0];%force and torque desired to cut the bone
-n = size(tt');
-Fd = zeros(n(1),6);
+Fd = [0 0 9 0 0 0];%force and torque desired to cut the bone
 
-for i=1:n(1)
-   Fd(i,:) = Fdval ;
-end
 
 C11 = 20.1 ;%longitudinal stiffness GPa
 C33 = 29.5 ;%longitudinal stiffness GPa
@@ -190,24 +185,25 @@ K = [C11 C12 C13 0 0 0; C12 C11 C13 0 0 0; C13 C13 C33 0 0 0; 0 0 0 C44 0 0; 0 0
 Md = 100*diag([1 1 1 1 1 1]);
 InvMd = inv(Md);
 
-xrval = x0; % We cut through the bone and get out
-xr = zeros(n(1),6);
+xr = x0; % We cut through the bone and get out
 
-for i=1:n(1)
-   xr(i,:) = xrval ;
-end
-
-Kp = 100*diag([1 1 1 1 1 1]) ; %we want to be stiff, not compliant
-Kd = 25*diag([1 1 1 1 1 1]);
+Kp = 200*diag([1 1 1 1 1 1]) ; %we want to be stiff, not compliant
+Kd = 150*diag([1 1 1 1 1 1]);
 
 
+%% Final trajectory
+%Needed in joint space (use the inverse jacobian scheme before for the 2nd
+datatime = out.time.data +10
+tt = [tt1 datatime']; %both time concatenated (18s)
 
+dataq = out.q.data; %Convert 2nd traj in joint space
+datadq = out.dq.data;
+dataddq = out.ddq.data;
 
+qd = cat(1,pos,dataq);
+dqd = cat(1,vel,datadq);
+ddqd = cat(1,acc,dataddq);
 
-
-
-
-
-
+save('alldata');
 
 
