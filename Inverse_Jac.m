@@ -5,7 +5,7 @@ x = u(7:12);
 
 Abb = Abb_model(); % call function robot model 
 
-Ja = Abb.jacob0(q);
+Ja = Abb.jacob0(q,'rpy');
 y = pinv(Ja)*x;
 
 end

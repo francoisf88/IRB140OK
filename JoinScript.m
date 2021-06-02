@@ -157,13 +157,13 @@ x0 = dir_kin(qf); %task space departure
 xf = x0 + [0.03 0 0 0 0 0];%task space arrival
 
 Ts = 1e-1; % Samplig Time 0.1 sec
-Tf = 18; % Duration trajectory (s) (we start at the end of the first traj)
-tt2 = [10:Ts:Tf]; %% time vector
+Tf = 8; % Duration trajectory (s) (we start at the end of the first traj)
+tt2 = [0:Ts:Tf]; %% time vector
 
 K =10*diag([1 1 1 1 1 1]);
 [posx, posxd, posxdd] = jtraj(x0,xf,tt2);%in task space
 
-
+%tt2 = [10:Ts:Tf+10];
 %data = out.q.data;
 
 % MyRobot.plot(data);
@@ -193,17 +193,24 @@ Kd = 150*diag([1 1 1 1 1 1]);
 
 %% Final trajectory
 %Needed in joint space (use the inverse jacobian scheme before for the 2nd
-datatime = out.time.data +10
-tt = [tt1 datatime']; %both time concatenated (18s)
+datatime = out.time1.data +10;
+% tt = [tt1 datatime']; %both time concatenated (18s)
 
 dataq = out.q.data; %Convert 2nd traj in joint space
 datadq = out.dq.data;
 dataddq = out.ddq.data;
 
-qd = cat(1,pos,dataq);
-dqd = cat(1,vel,datadq);
-ddqd = cat(1,acc,dataddq);
+% qd = cat(1,pos,dataq);
+% dqd = cat(1,vel,datadq);
+% ddqd = cat(1,acc,dataddq);
 
-save('alldata');
+%debug traj 1
+tt=tt1;
+qd=pos;
+dqd=vel;
+ddqd=acc;
+
+
+%save('alldata');
 
 
