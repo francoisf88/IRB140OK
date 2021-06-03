@@ -113,7 +113,7 @@ traje = ctraj(S0,Sf,tt); %% Trajectory in the task space
 q0 = [0 0 0 0 0 0 ]; %inital position
 qf = [pi/2 pi/3 pi/12 pi/2 0 pi/2]; %final position
 
-Ts = 1e-1; % Samplig Time 0.1 sec
+Ts = 5e-1; % Samplig Time 0.1 sec
 Tf = 10; % Duration trajectory (s)
 tt1 = [0:Ts:10]; %% time vector
 
@@ -192,8 +192,8 @@ Kd = 150*diag([1 1 1 1 1 1]);
 
 
 %% Final trajectory
-%Needed in joint space (use the inverse jacobian scheme before for the 2nd
-datatime = out.time1.data +10;
+%Needed in joint space (use the inverse jacobian scheme before for the 2nd)
+datatime = out.time1.data ;%+10;
 % tt = [tt1 datatime']; %both time concatenated (18s)
 
 dataq = out.q.data; %Convert 2nd traj in joint space
@@ -205,11 +205,16 @@ dataddq = out.ddq.data;
 % ddqd = cat(1,acc,dataddq);
 
 %debug traj 1
-tt=tt1;
-qd=pos;
-dqd=vel;
-ddqd=acc;
+% tt=tt1;
+% posd=pos;
+% veld=vel;
+% accd=acc;
 
+% debug traj 2
+tt=datatime';
+qd=dataq;
+dqd=datadq;
+ddqd=dataddq;
 
 %save('alldata');
 
