@@ -160,7 +160,8 @@ Ts = 1e-1; % Samplig Time 0.1 sec
 Tf = 8; % Duration trajectory (s) (we start at the end of the first traj)
 tt2 = [0:Ts:Tf]; %% time vector
 
-K =10*diag([1 1 1 1 1 1]);
+Kjac1 = 10*diag([1 1 1 1 1 1]);
+Kjac =0.01*diag([1 1 1 1 1 1]);
 [posx, posxd, posxdd] = jtraj(x0,xf,tt2);%in task space
 
 %tt2 = [10:Ts:Tf+10];
