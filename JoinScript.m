@@ -26,15 +26,15 @@ L_abb(6).qlim = [-400 400]*pi/180;
 MyRobot = SerialLink(L_abb,'name','abb');
 
 %%%%% Define robot position and velocity. This is the initial configuration
-q = [0 0 0 0 0 0];
-dot_q = [0 0 0 0 0 0];
-
-%%% display graphical representation of robot: This fucntion need the
-%%% configuration of my robot
-MyRobot.plot(q);
-
-%%% drive the graphical robot
-MyRobot.teach
+% q = [0 0 0 0 0 0];
+% dot_q = [0 0 0 0 0 0];
+% 
+% %%% display graphical representation of robot: This fucntion need the
+% %%% configuration of my robot
+% %MyRobot.plot(q);
+% 
+% %%% drive the graphical robot
+% MyRobot.teach
 
 %%  Direct kinematics. Preliminar Analysis
 
@@ -58,7 +58,7 @@ rpy = tr2rpy(T);
 %%%% Geometric Jacobian (needed for the book page 154)
 J = MyRobot.jacob0(q);
 %%%% Analytixal Jacobian (eul angle rapp -ZYZ)
-Ja = MyRobot.jacob0(q,'eul'); 
+%Ja = MyRobot.jacob0(q,'eul'); 
 %%%% Analytixal Jacobian (rpy angle rapp)
 %Ja = MyRobot.jacob0(q,'rpy'); 
 
@@ -110,8 +110,8 @@ traje = ctraj(S0,Sf,tt); %% Trajectory in the task space
 %% A first trajectory in joint space
 
 %%%Task space position for trajectory
-q0 = [0 0 0 0 0 0 ]; %inital position
-qf = [pi/2 pi/3 pi/12 pi/2 0 pi/2]; %final position
+q0 = [0 pi/8 pi/6 0 pi/4 0 ]; %inital position
+qf =[0 pi/3 pi/12 pi/2 pi/4 0] ;%[0 pi/2 0 pi/2 pi/4 0]; %final position
 
 Ts = 5e-1; % Samplig Time 0.1 sec
 Tf = 10; % Duration trajectory (s)
@@ -119,6 +119,18 @@ tt1 = [0:Ts:10]; %% time vector
 
 [pos,vel,acc] = jtraj(q0,qf,tt1);%%% trajectory both in the joint space
 MyRobot.plot(pos);
+
+%% A first trajectory in task space
+
+x0_1 = dir_kin(q0); %inital position
+xf_1 = dir_kin(qf); %final position
+
+Ts = 5e-1; % Samplig Time 0.1 sec
+Tf = 10; % Duration trajectory (s)
+tt1 = [0:Ts:10]; %% time vector
+
+[pos,vel,acc] = jtraj(x0_1,xf_1,tt1);%%% trajectory both in the task space
+
 
 %% A second trajectory in task space
 
@@ -153,21 +165,17 @@ MyRobot.plot(pos);
 
 %% A better way
 
-x0 = dir_kin(qf); %task space departure
-xf = x0 + [0.03 0 0 0 0 0];%task space arrival
+x0_2 = pos(end,:); %task space departure
+xf_2 = x0_2 + [0 0.03 0 0 0 0];%task space arrival
 
 Ts = 1e-1; % Samplig Time 0.1 sec
 Tf = 8; % Duration trajectory (s) (we start at the end of the first traj)
 tt2 = [0:Ts:Tf]; %% time vector
 
 Kjac1 = 10*diag([1 1 1 1 1 1]);
-Kjac =0.01*diag([1 1 1 1 1 1]);
-[posx, posxd, posxdd] = jtraj(x0,xf,tt2);%in task space
+Kjac = 10*diag([1 1 1 1 1 1]);
+[posx, posxd, posxdd] = jtraj(x0_2,xf_2,tt2);%in task space
 
-%tt2 = [10:Ts:Tf+10];
-%data = out.q.data;
-
-% MyRobot.plot(data);
 
 %% Force control
 
@@ -186,7 +194,7 @@ K = [C11 C12 C13 0 0 0; C12 C11 C13 0 0 0; C13 C13 C33 0 0 0; 0 0 0 C44 0 0; 0 0
 Md = 100*diag([1 1 1 1 1 1]);
 InvMd = inv(Md);
 
-xr = x0; % We cut through the bone and get out
+xr = x0_2; % We cut through the bone and get out
 
 Kp = 200*diag([1 1 1 1 1 1]) ; %we want to be stiff, not compliant
 Kd = 150*diag([1 1 1 1 1 1]);
@@ -194,16 +202,16 @@ Kd = 150*diag([1 1 1 1 1 1]);
 
 %% Final trajectory
 %Needed in joint space (use the inverse jacobian scheme before for the 2nd)
-datatime = out.time1.data ;%+10;
-% tt = [tt1 datatime']; %both time concatenated (18s)
-
-dataq = out.q.data; %Convert 2nd traj in joint space
-datadq = out.dq.data;
-dataddq = out.ddq.data;
-
-% qd = cat(1,pos,dataq);
-% dqd = cat(1,vel,datadq);
-% ddqd = cat(1,acc,dataddq);
+% datatime = out.time1.data ;%+10;
+% % tt = [tt1 datatime']; %both time concatenated (18s)
+% 
+% dataq = out.q.data; %Convert 2nd traj in joint space
+% datadq = out.dq.data;
+% dataddq = out.ddq.data;
+% 
+% % qd = cat(1,pos,dataq);
+% % dqd = cat(1,vel,datadq);
+% % ddqd = cat(1,acc,dataddq);
 
 %debug traj 1
 % tt=tt1;
@@ -211,12 +219,17 @@ dataddq = out.ddq.data;
 % veld=vel;
 % accd=acc;
 
-% debug traj 2
-tt=datatime';
-qd=dataq;
-dqd=datadq;
-ddqd=dataddq;
+% % debug traj 2
+% tt=datatime';
+% qd=dataq;
+% dqd=datadq;
+% ddqd=dataddq;
+% posd=qd;
+% veld=dqd;
+% accd=ddqd;
+% %save('alldata');
 
-%save('alldata');
-
-
+tt = tt2;%[tt1 tt2+10];
+xd = posx;%cat(1,pos,posx);
+dxd = posxd;%cat(1,vel,posxd);
+ddxd = posxdd;%cat(1,acc,posxdd);

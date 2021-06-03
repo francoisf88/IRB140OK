@@ -20,8 +20,8 @@ dx = Ja*dq;
 dx_tilda = dx_d - dx; %error position
 x_tilda = x_d - x; %error velocity
 
-Kp = 1e-5*diag([1 1 1 1 1 1]); %weigth matrix position
-Kd = 3e-6*diag([1 1 1 1 1 1]); %weigth matrix velocity 
+Kp = 10*diag([1 1 1 1 1 1]); %weigth matrix position
+Kd = 3e-3*diag([1 1 1 1 1 1]); %weigth matrix velocity 
 
 y = invJa*(ddx_d + Kd*dx_tilda + Kp*x_tilda - dJa); %add control inputs
 
